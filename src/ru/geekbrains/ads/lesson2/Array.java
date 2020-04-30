@@ -33,7 +33,13 @@ public interface Array<E> {
     }
 
     void sortBubble(boolean wasChangedMode);
+    default void sortBubble() {
+        sortBubble(false);
+    }
     void sortSelect();
     void sortInsert();
 
+    Array<E> copy();
+
+    E[] toArray();
 }
