@@ -7,6 +7,16 @@ public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
     private Node<E> root;
     private int size;
 
+    private int maxLevel;
+
+    public TreeImpl() {
+        this(0);
+    }
+
+    public TreeImpl(int maxLevel) {
+        this.maxLevel = maxLevel;
+    }
+
     @Override//O(logN)
     public boolean add(E value) {
         Node<E> newNode = new Node<>(value);
@@ -20,7 +30,14 @@ public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
         if (parent == null) {
             return false;
         }
-        else if (value.compareTo(parent.getValue()) > 0) {
+
+        int level = parent.getLevel() + 1;
+        if (level > maxLevel) {
+            return false;
+        }
+
+
+        if (value.compareTo(parent.getValue()) > 0) {
             parent.setRightChild(newNode);
         }
         else {
@@ -102,6 +119,22 @@ public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
     @Override
     public int size() {
         return size;
+    }
+
+    @Override
+    public boolean isBalanced() {
+        return isBalanced(root);
+    }
+
+    private boolean isBalanced(Node node) {
+        return (node == null) ||
+                isBalanced(node.getLeftChild()) &&
+                        isBalanced(node.getRightChild()) &&
+                        Math.abs(height(node.getLeftChild()) - height(node.getRightChild())) <= 1;
+    }
+
+    private int height(Node node) {
+        return node == null ? 0 : 1 + Math.max(height(node.getLeftChild()), height(node.getRightChild()));
     }
 
     @Override
@@ -236,7 +269,14 @@ public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
     private NodeAndItsParent doFind(E value) {
         Node<E> parent = null;
         Node<E> current = root;
+
+        current.setLevel(1);
+
         while (current != null) {
+            if (parent != null) {
+                current.setLevel(parent.getLevel() + 1);
+            }
+
             if (current.getValue().equals(value)) {
                 return new NodeAndItsParent(current, parent);
             }
