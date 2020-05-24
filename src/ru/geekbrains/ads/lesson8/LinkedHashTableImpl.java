@@ -57,6 +57,11 @@ public class LinkedHashTableImpl<K, V> implements HashTable<K, V> {
     @Override
     public boolean put(K key, V value) {
         int index = hashFunc(key);
+        int listIndex = indexOf(key);
+        if (listIndex != -1) {
+            data[index].get(listIndex).value = value;
+            return true;
+        }
         data[index].add(new Item<>(key, value));
         size++;
         return true;
